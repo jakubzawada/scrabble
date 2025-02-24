@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrabble/app/home/pages/scrabble_board.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(),
+      home: ScrabbleBoard(board: board),
     );
   }
 }
