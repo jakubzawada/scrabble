@@ -5,10 +5,10 @@ class GameBoardScreen extends StatefulWidget {
   const GameBoardScreen({super.key});
 
   @override
-  _GameBoardScreenState createState() => _GameBoardScreenState();
+  GameBoardScreenState createState() => GameBoardScreenState();
 }
 
-class _GameBoardScreenState extends State<GameBoardScreen> {
+class GameBoardScreenState extends State<GameBoardScreen> {
   static const Map<int, String> bonusTiles = {
     0: '3W',
     7: '3W',
@@ -40,16 +40,38 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
     204: '3L',
   };
 
-  // Zestaw liter Scrabble (literki oraz ich liczba)
   final Map<String, int> letterDistribution = {
-    'A': 9, 'B': 2, 'C': 2, 'D': 4, 'E': 12, 'F': 2, 'G': 3, 'H': 2, 'I': 9,
-    'J': 1, 'K': 1, 'L': 4, 'M': 2, 'N': 6, 'O': 8, 'P': 2, 'Q': 1, 'R': 6,
-    'S': 4, 'T': 6, 'U': 4, 'V': 2, 'W': 2, 'X': 1, 'Y': 2, 'Z': 1,
-    '_': 2 // "_" to dzika litera
+    'A': 9,
+    'B': 2,
+    'C': 2,
+    'D': 4,
+    'E': 12,
+    'F': 2,
+    'G': 3,
+    'H': 2,
+    'I': 9,
+    'J': 1,
+    'K': 1,
+    'L': 4,
+    'M': 2,
+    'N': 6,
+    'O': 8,
+    'P': 2,
+    'Q': 1,
+    'R': 6,
+    'S': 4,
+    'T': 6,
+    'U': 4,
+    'V': 2,
+    'W': 2,
+    'X': 1,
+    'Y': 2,
+    'Z': 1,
+    '_': 2
   };
 
-  List<String> letterRack = []; // Paleta liter
-  Map<int, String?> boardState = {}; // Stan planszy
+  List<String> letterRack = [];
+  Map<int, String?> boardState = {};
 
   @override
   void initState() {
@@ -67,7 +89,6 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
       availableLetters.addAll(List.filled(count, letter));
     });
 
-    // Losujemy 7 liter
     setState(() {
       letterRack = List.generate(7, (_) {
         final randomIndex = random.nextInt(availableLetters.length);
@@ -83,7 +104,6 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
       body: Center(
         child: Column(
           children: [
-            // Plansza gry
             SizedBox(
               width: 800,
               height: 800,
@@ -96,8 +116,8 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                   return DragTarget<String>(
                     onAccept: (letter) {
                       setState(() {
-                        // Umieszczamy literę na planszy
                         boardState[index] = letter;
+                        letterRack.remove(letter);
                       });
                     },
                     builder: (context, candidateData, rejectedData) {
@@ -120,8 +140,6 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                 },
               ),
             ),
-
-            // Paleta liter
             Container(
               padding: const EdgeInsets.all(10),
               height: 80,
@@ -132,17 +150,6 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Draggable<String>(
                       data: letter,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.amber,
-                        ),
-                        child: Center(
-                          child: Text(letter),
-                        ),
-                      ),
                       feedback: Material(
                         color: Colors.transparent,
                         child: Container(
@@ -154,7 +161,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           ),
                           child: Center(
                             child: Text(letter,
-                                style: TextStyle(color: Colors.white)),
+                                style: const TextStyle(color: Colors.white)),
                           ),
                         ),
                       ),
@@ -166,6 +173,17 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           color: Colors.grey.shade300,
                         ),
                         child: const Center(child: Text('')),
+                      ),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          color: Colors.amber,
+                        ),
+                        child: Center(
+                          child: Text(letter),
+                        ),
                       ),
                     ),
                   );
