@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class GameBoardScreen extends StatelessWidget {
+class GameBoardScreen extends StatefulWidget {
   const GameBoardScreen({super.key});
 
+  @override
+  _GameBoardScreenState createState() => _GameBoardScreenState();
+}
+
+class _GameBoardScreenState extends State<GameBoardScreen> {
   static const Map<int, String> bonusTiles = {
     0: '3W',
     7: '3W',
@@ -34,6 +39,10 @@ class GameBoardScreen extends StatelessWidget {
     204: '3L',
   };
 
+  List<String> letterRack = ['A', 'B', 'C', 'D', 'E', 'F', 'G']; // Paleta liter
+  Map<int, String?> boardState =
+      {}; // Przechowuje stan planszy (pozycja - litera)
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +50,7 @@ class GameBoardScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+            // Plansza gry
             SizedBox(
               width: 800,
               height: 800,
@@ -50,46 +60,85 @@ class GameBoardScreen extends StatelessWidget {
                 ),
                 itemCount: 15 * 15,
                 itemBuilder: (context, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black12),
-                      color: bonusTiles.containsKey(index)
-                          ? _getBonusColor(bonusTiles[index]!)
-                          : Colors.white,
-                    ),
-                    child: Center(
-                      child: Text(
-                        bonusTiles[index] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                  return DragTarget<String>(
+                    onAccept: (letter) {
+                      setState(() {
+                        // Umieszczamy literę na planszy
+                        boardState[index] = letter;
+                      });
+                    },
+                    builder: (context, candidateData, rejectedData) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black12),
+                          color: bonusTiles.containsKey(index)
+                              ? _getBonusColor(bonusTiles[index]!)
+                              : Colors.white,
+                        ),
+                        child: Center(
+                          child: Text(
+                            boardState[index] ?? (bonusTiles[index] ?? ''),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
             ),
+
+            // Paleta liter
             Container(
               padding: const EdgeInsets.all(10),
               height: 80,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(7, (index) {
+                children: letterRack.map((letter) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        color: Colors.amber,
+                    child: Draggable<String>(
+                      data: letter,
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          color: Colors.amber,
+                        ),
+                        child: Center(
+                          child: Text(letter),
+                        ),
                       ),
-                      child: const Center(
-                        child: Text('A'),
+                      feedback: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            color: Colors.amber.shade200,
+                          ),
+                          child: Center(
+                            child: Text(letter,
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ),
+                      childWhenDragging: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          color: Colors.grey.shade300,
+                        ),
+                        child: const Center(child: Text('')),
                       ),
                     ),
                   );
-                }),
+                }).toList(),
               ),
-            )
+            ),
           ],
         ),
       ),
