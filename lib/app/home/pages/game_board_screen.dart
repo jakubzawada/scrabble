@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class GameBoardScreen extends StatefulWidget {
@@ -39,9 +40,41 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
     204: '3L',
   };
 
-  List<String> letterRack = ['A', 'B', 'C', 'D', 'E', 'F', 'G']; // Paleta liter
-  Map<int, String?> boardState =
-      {}; // Przechowuje stan planszy (pozycja - litera)
+  // Zestaw liter Scrabble (literki oraz ich liczba)
+  final Map<String, int> letterDistribution = {
+    'A': 9, 'B': 2, 'C': 2, 'D': 4, 'E': 12, 'F': 2, 'G': 3, 'H': 2, 'I': 9,
+    'J': 1, 'K': 1, 'L': 4, 'M': 2, 'N': 6, 'O': 8, 'P': 2, 'Q': 1, 'R': 6,
+    'S': 4, 'T': 6, 'U': 4, 'V': 2, 'W': 2, 'X': 1, 'Y': 2, 'Z': 1,
+    '_': 2 // "_" to dzika litera
+  };
+
+  List<String> letterRack = []; // Paleta liter
+  Map<int, String?> boardState = {}; // Stan planszy
+
+  @override
+  void initState() {
+    super.initState();
+    _generateRandomLetters();
+  }
+
+  // Funkcja do losowania liter
+  void _generateRandomLetters() {
+    final random = Random();
+    final availableLetters = <String>[];
+
+    // Tworzymy listę liter, uwzględniając ich liczbę
+    letterDistribution.forEach((letter, count) {
+      availableLetters.addAll(List.filled(count, letter));
+    });
+
+    // Losujemy 7 liter
+    setState(() {
+      letterRack = List.generate(7, (_) {
+        final randomIndex = random.nextInt(availableLetters.length);
+        return availableLetters.removeAt(randomIndex);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
